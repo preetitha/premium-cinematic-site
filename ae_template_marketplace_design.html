@@ -1,0 +1,316 @@
+# AE Market — Full Repo Files (copy-paste each file)
+
+Below are all project files for the **Next.js + Tailwind** Premium VFX marketplace. Copy each file into your local project with the exact path and filename shown.
+
+---
+
+## package.json
+
+```json
+{
+  "name": "ae-market",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "13.5.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0"
+  }
+}
+```
+
+---
+
+## next.config.js (optional but recommended)
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+}
+module.exports = nextConfig
+```
+
+---
+
+## postcss.config.js
+
+```js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
+
+---
+
+## tailwind.config.js
+
+```js
+module.exports = {
+  content: [
+    './pages/**/*.{js,jsx}',
+    './components/**/*.{js,jsx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+---
+
+## styles/globals.css
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --glass-bg: rgba(255,255,255,0.04);
+}
+body{
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.glass { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.06); }
+.neon { text-shadow: 0 0 10px rgba(0,183,255,0.25), 0 0 30px rgba(127,0,255,0.12); }
+
+/* small utilities for demo */
+.container { max-width: 1200px; margin: 0 auto; }
+```
+```
+
+---
+
+## pages/_app.jsx
+
+```jsx
+import '../styles/globals.css'
+export default function App({ Component, pageProps }){
+  return <Component {...pageProps} />
+}
+```
+
+---
+
+## components/Header.jsx
+
+```jsx
+import React from 'react'
+export default function Header({ onAuth, onUpload }){
+  return (
+    <header className="backdrop-blur-sm bg-black/30 border-b border-gray-800 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00b7ff] via-[#7f00ff] to-[#ff0066] flex items-center justify-center text-black font-bold">AE</div>
+          <div>
+            <div className="text-lg font-semibold tracking-wider">AE Market</div>
+            <div className="text-xs text-gray-400">3D Cinematic Templates</div>
+          </div>
+        </div>
+        <nav className="hidden md:flex items-center gap-6">
+          <a className="text-gray-300 hover:text-white">Home</a>
+          <a className="text-gray-300 hover:text-white">Templates</a>
+          <a className="text-gray-300 hover:text-white">Pricing</a>
+        </nav>
+        <div className="flex items-center gap-3">
+          <button className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/6 border border-white/10">Upload</button>
+          <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00b7ff] to-[#7f00ff] text-black font-semibold">Sign In</button>
+        </div>
+      </div>
+    </header>
+  )
+}
+```
+
+---
+
+## components/TemplateCard.jsx
+
+```jsx
+export default function TemplateCard({ t, onPreview }){
+  return (
+    <div className="bg-gradient-to-br from-[#081018] to-[#071021] border border-white/6 rounded-2xl p-4 hover:scale-[1.02] transition-transform">
+      <div className="relative rounded-xl overflow-hidden">
+        <img src={t.img} alt={t.title} className="w-full h-40 object-cover" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent" />
+      </div>
+      <div className="mt-3 flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold">{t.title}</h4>
+          <div className="text-xs text-gray-400">{t.duration} · {t.price}</div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={onPreview} className="px-3 py-2 rounded-lg bg-white/6">Preview</button>
+          <button className="px-3 py-2 rounded-lg bg-gradient-to-r from-[#00b7ff] to-[#7f00ff] text-black font-semibold">Buy</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## components/Footer.jsx
+
+```jsx
+export default function Footer(){
+  return (
+    <footer className="py-6 px-6 md:px-12 border-t border-gray-800 text-gray-400">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>© {new Date().getFullYear()} AE Market</div>
+        <div className="flex gap-4">
+          <a className="text-sm hover:text-white">Terms</a>
+          <a className="text-sm hover:text-white">Privacy</a>
+          <a className="text-sm hover:text-white">Support</a>
+        </div>
+      </div>
+    </footer>
+  )
+}
+```
+
+---
+
+## pages/index.jsx
+
+```jsx
+import React, { useState } from 'react'
+import Header from '../components/Header'
+import TemplateCard from '../components/TemplateCard'
+import Footer from '../components/Footer'
+
+export default function Home(){
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const templates = [
+    { id:1, title:'3D Sci‑Fi Logo', duration:'15s', price:'$18', img:'/assets/t1.jpg' },
+    { id:2, title:'Cinematic Particle Boom', duration:'20s', price:'$22', img:'/assets/t2.jpg' },
+    { id:3, title:'Metallic Reveal', duration:'12s', price:'$15', img:'/assets/t3.jpg' },
+    { id:4, title:'Energy Burst', duration:'10s', price:'$12', img:'/assets/t4.jpg' },
+  ]
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-[#040714] text-white">
+      <Header />
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <section className="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold">Premium 3D Cinematic<br/>Logo Reveals & Openers</h1>
+            <p className="mt-4 text-gray-300 max-w-xl">High quality, modular AE templates — preview, customize and render fast.</p>
+            <div className="mt-6 flex gap-3">
+              <button className="px-6 py-3 rounded-xl bg-white/6">Watch Demo</button>
+              <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#00b7ff] to-[#7f00ff] text-black">Browse Templates</button>
+            </div>
+          </div>
+          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-white/6 p-1">
+            <div className="bg-gradient-to-br from-[#0f1724] to-[#071027] p-6 rounded-lg">
+              <div className="w-full h-64 bg-black rounded-md flex items-center justify-center text-gray-500">Video Preview</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold">Featured Templates</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+            {templates.map(t => <TemplateCard key={t.id} t={t} onPreview={() => setPreviewOpen(true)} />)}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+```
+
+---
+
+## pages/templates/[id].jsx
+
+```jsx
+import { useRouter } from 'next/router'
+import Header from '../../components/Header'
+import Footer from '../../components/Footer'
+
+export default function TemplatePage(){
+  const { query } = useRouter()
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <Header />
+      <main className="max-w-5xl mx-auto p-8">
+        <h1 className="text-3xl">Template: {query.id}</h1>
+        <p className="text-gray-400 mt-2">This single-template page shows preview, specs, and download links.</p>
+        <div className="mt-6 bg-gradient-to-br from-[#071021] to-[#091122] p-6 rounded-xl">
+          <div className="w-full h-64 bg-black rounded-md flex items-center justify-center text-gray-500">Video Preview</div>
+          <div className="mt-4 text-gray-300">Download · Filesize · Requirements · License</div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+```
+
+---
+
+## pages/api/upload.js
+
+```js
+export default async function handler(req, res){
+  if(req.method === 'POST'){
+    // TODO: handle file upload, validate user, store to S3 and create DB record
+    return res.status(200).json({ ok: true })
+  }
+  res.status(405).json({ error: 'Method not allowed' })
+}
+```
+
+---
+
+## public/assets (images)
+
+Create folder `public/assets` and add these placeholder files (or your own):
+- t1.jpg
+- t2.jpg
+- t3.jpg
+- t4.jpg
+- hero-bg.jpg
+
+(You can use royalty-free images or renders for now.)
+
+---
+
+## README — Quick Setup
+
+1. Create project: `npx create-next-app ae-market`
+2. Replace `package.json` with above (or just run `npm install` for deps)
+3. Add `postcss.config.js`, `tailwind.config.js`, and `styles/globals.css` as above
+4. Create `components` and `pages` files with the code above
+5. Put sample images in `public/assets`
+6. Run: `npm run dev` and open `http://localhost:3000`
+
+---
+
+If you want, I can now:
+
+- 🔹 Split each file into separate canvas code blocks so you can copy easily (I can create one canvas per file or keep single doc). 
+- 🔹 Generate a downloadable zip and provide it to you. 
+- 🔹 Add authentication (NextAuth) and S3 upload code for real uploads. 
+
+बताइए — मैं क्या next करूँ? (मैं अभी हर file को अलग canvas में भी डाल दूँगा ताकि copy-paste आसान हो)।
